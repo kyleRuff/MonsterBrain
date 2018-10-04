@@ -1,0 +1,91 @@
+@import "ui-variables";
+
+.chat{
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  width: 225px;
+  min-width:200px;
+  color: @text-color;
+  border-left: 1px solid @base-border-color;
+  .chat-resize-handle {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 10px;
+    cursor: col-resize;
+    z-index: 4;
+  }
+}
+
+.chat-class {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+
+  .chat-input {
+    padding: @component-padding;
+  }
+
+  .chat-messages {
+    flex: 1 1 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding: @component-padding;
+    padding-top: 0;
+    ul {
+      padding-left: 0px;
+      margin: 0;
+      li{
+        list-style: none;
+        .active{
+          background-color: @text-color-subtle;
+          color: @text-color-warning;
+        }
+        vertical-align: center;
+      }
+
+      .message{
+        padding: @component-icon-padding;
+        .user {
+          color: #FFB14D;
+          word-wrap: break-word;
+        }
+        .text {
+          word-wrap: break-word;
+        }
+      }
+    }
+  }
+
+  .chat-header{
+    display: block;
+    text-align: center;
+    padding: @component-padding;
+    line-height: 13px;
+    .chat-title {
+      font-size:13px;
+      cursor: default;
+      color: @text-color;
+    }
+  }
+
+  .chat-footer {
+    display: flex;
+    padding: @component-icon-padding + 1px 0 @component-icon-padding @component-icon-padding;
+    border-top: 1px solid @base-border-color;
+    font-size: 11px;
+  }
+
+}
+
+.platform-win32 {
+  .chat {
+    .chat-resize-handle {
+      cursor: ew-resize;
+    }
+  }
+}
+
+// Deprecated. Can be removed after Atom 1.6 is released
+.chat{ height: 100%; }

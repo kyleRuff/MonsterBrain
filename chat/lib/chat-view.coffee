@@ -67,29 +67,33 @@ module.exports =
         socket.emit 'atom:username', @username
 
     resizeToFitContent: ->
+# set the width as 1
       @width(1)
+# make the width of the list as 1
       @width(@list.outerWidth())
 
     enterPressed: (e) ->
+# make key as a specific key code
       key = e.keyCode || e.which
+# if we enter 13 as key, then call sendMessage.
       if key == 13
         @sendMessage()
-
+# activate the file
     resizeStarted: =>
       $(document).on('mousemove', @resizeChatView)
       $(document).on('mouseup', @resizeStopped)
-
+# stope the file
     resizeStopped: =>
       $(document).off('mousemove', @resizeChatView)
       $(document).off('mouseup', @resizeStopped)
 
     resizeChatView: ({pageX, which}) =>
       return @resizeStopped() unless which is 1
-      if atom.config.get('chat.showOnRightSide')
-        width = @outerWidth() + @offset().left - pageX
-      else
-        width = pageX - @offset().left
-      @width(width)
+      if atom.config.get('chat.showOnRightSide') # set the condition is that if the content show on the right side
+        width = @outerWidth() + @offset().left - pageX # set the width
+      else # content show on the other sides
+        width = pageX - @offset().left # set the width
+      @width(width)# store the width
 
     onSideToggled: (newValue) ->
       @element.dataset.showOnRightSide = newValue
@@ -103,12 +107,14 @@ module.exports =
 #      title = "#{_.pluralize(online, 'user')} online"
 #      @toolTipDisposable = atom.tooltips.add @title, title: title
 
+# show the title which is "the best team chat ever!!!"
     showTitle: () ->
       @toolTipDisposable?.dispose()
       @title.html('MonsterBrain Chat')
       title = "The best team chat ever!!!"
       @toolTipDisposable = atom.tooltips.add @title, title: title
 
+#  add new message in the list
     addMessage: (message)->
       @list.prepend new MessageView(message)
       if atom.config.get('chat.openOnNewMessage')
@@ -117,8 +123,12 @@ module.exports =
           @attach()
 
     sendMessage: ->
+# make msg is content in chatEditor
       msg = @chatEditor.getText()
       @chatEditor.setText('')
+# in text: show msg which should be the content in chatEditor
+# uuid: shows the uuid we input
+# username: shows the username we input
       message =
         text: msg
         uuid: @uuid

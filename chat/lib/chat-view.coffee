@@ -135,13 +135,13 @@ module.exports =
         username: @username
 
 #      socket.emit 'atom:message', message
-      @addMessage(message)
+      @addMessage(message)#add the message
 
 #    getSocket: ->
 #      socket
 
     getUserId: ->
-      @uuid
+      @uuid # get user id
 
     serialize: ->
 
@@ -162,10 +162,10 @@ module.exports =
       @focus()
 
     attach: ->
-      if atom.config.get('chat.showOnRightSide')
+      if atom.config.get('chat.showOnRightSide')#if the chat shoes on the right side, then remove the left panel, and set the right panel
         @removeClass('panel-left')
         @panel = atom.workspace.addRightPanel(item: this, className: 'panel-right')
-      else
+      else#if the pane on the left side, remove the right panel and set the left panel.
         @removeClass('panel-right')
         @panel = atom.workspace.addLeftPanel(item: this, className: 'panel-left')
       @chatEditor.focus()
@@ -183,4 +183,4 @@ module.exports =
       @detach() if @panel?
 
     detached: ->
-      @resizeStopped()
+      @resizeStopped()#call resizeStopped stop the file

@@ -2,10 +2,10 @@
 
 module.exports =
 class MessageView extends View
-  @content: (message) ->
-    @li class: 'file entry list-item', =>
+  @content: (message) ->#set the massage in the content
+    @li class: 'file entry list-item', => 
       @div class: 'message', =>
-        @span class: 'user', "#{message.username}: "
-        @span class: 'text', "#{message.text}"
+        @span class: 'user', "#{message.username}: "#show all the username
+        @span class: 'text', "#{message.text}"#show the message content
 
   initialize: () ->

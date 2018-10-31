@@ -1,6 +1,7 @@
 {$, ScrollView, View, TextEditorView} = require 'atom-space-pen-views'
 {CompositeDisposable, TextEditor, TextBuffer} = require 'atom'
 MessageView = require './message-view'
+fs = require 'fs-plus'
 #_ = require 'underscore-plus'
 #socket = require('socket.io-client')('https://atom-chat-server.herokuapp.com');
 
@@ -30,10 +31,11 @@ module.exports =
     initialize: () ->
       @subscriptions = new CompositeDisposable
       @username = atom.config.get('chat.username')
+      @filePath = atom.config.get('chat.logFile')
 #      @handleSockets()
+      @openLogFile()
       @showTitle()
       @handleEvents()
-      @room = 0
 
 #    handleSockets: ->
 #      socket.on 'connect', =>
@@ -48,23 +50,31 @@ module.exports =
 #      socket.on 'atom:online', (online) =>
 #        @showOnline(online)
 
+    openLogFile: =>
+      now = new Date
+      time = now.getTime()
+      str = "______________________________\n\rNEW SESSION (Time: " + time + ")\n\r"
+      fs.writeFile(@filePath, str, {flag: "a"}, (err) ->
+        if err
+          throw err
+      )
 
     handleEvents: ->
       @on 'dblclick', '.chat-resize-handle', =>
         @resizeToFitContent()
       @on 'mousedown', '.chat-resize-handle', (e) => @resizeStarted(e)
       @on 'keyup', '.chat-input .editor', (e) => @enterPressed(e)
-      @on 'click', '.chat-room', => @roomsClicked()
 
       @subscriptions.add atom.config.onDidChange 'chat.showOnRightSide', ({newValue}) =>
         @onSideToggled(newValue)
 
       @subscriptions.add atom.config.onDidChange 'chat.username', ({newValue}) =>
-        if newValue is "User"
-          @username = newValue+@uuid
-        else
-          @username = newValue
-        socket.emit 'atom:username', @username
+        @username = newValue
+#        socket.emit 'atom:username', @username
+
+      @subscriptions.add atom.config.onDidChange 'chat.logFile', ({newValue}) =>
+        @filePath = newValue
+#        @openLogFile()
 
     resizeToFitContent: ->
       @width(1)
@@ -109,12 +119,21 @@ module.exports =
       title = "The best team chat ever!!!"
       @toolTipDisposable = atom.tooltips.add @title, title: title
 
-    addMessage: (message)->
+    addMessage: (message) ->
       @list.prepend new MessageView(message)
+      utter = new SpeechSynthesisUtterance(message.text)
+      window.speechSynthesis.speak(utter)
       if atom.config.get('chat.openOnNewMessage')
         unless @isVisible()
           @detach()
           @attach()
+
+    writeLog: (message) ->
+      msg = message.username + ": " + message.text + "\n\r"
+      fs.writeFile(@filePath, msg, {flag: "a"}, (err) ->
+        if err
+          throw err
+      )
 
     sendMessage: ->
       msg = @chatEditor.getText()
@@ -126,6 +145,7 @@ module.exports =
 
 #      socket.emit 'atom:message', message
       @addMessage(message)
+      @writeLog(message)
 
 #    getSocket: ->
 #      socket
